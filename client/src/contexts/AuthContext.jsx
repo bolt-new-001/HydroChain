@@ -24,14 +24,16 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuthStatus = async () => {
     try {
-        const response = await api.get('/auth/profile');
-        if (response.data.success) {
-          setUser(response.data.data.user);
-          setIsAuthenticated(true);
-          localStorage.removeItem('token');
-        }
+      const response = await api.get('/auth/profile');
+      if (response.data.success) {
+        setUser(response.data.data.user);
+        setIsAuthenticated(true);
       }
     } catch (error) {
+      // User not authenticated, clear any stored tokens
+      localStorage.removeItem('token');
+      setUser(null);
+      setIsAuthenticated(false);
     } finally {
       setLoading(false);
     }

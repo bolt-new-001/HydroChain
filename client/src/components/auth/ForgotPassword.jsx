@@ -31,6 +31,8 @@ const ForgotPassword = () => {
         error.response.data.errors.forEach(err => {
           setFieldError(err.field || 'email', err.message);
         });
+      } else {
+        setFieldError('email', error.response?.data?.message || 'Failed to send reset link');
       }
     } finally {
       setSubmitting(false);

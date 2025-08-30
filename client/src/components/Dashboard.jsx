@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { LogOut, User, Building2, Shield, Leaf, ShoppingCart, Gavel } from 'lucide-react';
 import RoleBasedAccess from './common/RoleBasedAccess';
 import { useRoleAccess } from '../hooks/useRoleAccess';
+import RoleBasedDashboard from './RoleBasedDashboard';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -221,7 +222,9 @@ const Dashboard = () => {
 
           {/* Role-based Dashboard Content */}
           <div className="mt-6">
-            <RoleBasedDashboard />
+            <RoleBasedAccess allowedRoles={['admin', 'producer', 'verifier', 'buyer', 'regulator']}>
+              <RoleBasedDashboard />
+            </RoleBasedAccess>
           </div>
 
           {/* Quick Actions */}

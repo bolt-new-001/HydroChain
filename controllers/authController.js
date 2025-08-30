@@ -47,6 +47,7 @@ const signup = async (req, res) => {
     // Check if user already exists
     const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
+      if (existingUser.isEmailVerified) {
       return res.status(400).json({
         success: false,
         message: 'User with this email already exists'
@@ -57,21 +58,24 @@ const signup = async (req, res) => {
     if (role === 'producer' && (!facilityDetails || !facilityDetails.facilityName)) {
       return res.status(400).json({
         success: false,
-        message: 'Facility details are required for producers'
+        message: 'Facility details are required for producers',
+        errors: [{ field: 'facilityDetails.facilityName', message: 'Facility name is required' }]
       });
     }
 
     if (role === 'verifier' && (!certificationBody || !certificationBody.bodyName)) {
       return res.status(400).json({
         success: false,
-        message: 'Certification body details are required for verifiers'
+        message: 'Certification body details are required for verifiers',
+        errors: [{ field: 'certificationBody.bodyName', message: 'Certification body name is required' }]
       });
     }
 
     if (role === 'buyer' && (!industryType || industryType.trim() === '')) {
       return res.status(400).json({
         success: false,
-        message: 'Industry type is required for buyers'
+        message: 'Industry type is required for buyers',
+        errors: [{ field: 'industryType', message: 'Industry type is required' }]
       });
     }
 
@@ -137,7 +141,8 @@ const verifyOTP = async (req, res) => {
     if (!otpDoc) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid or expired OTP'
+        message: 'Invalid or expired OTP',
+        errors: [{ field: 'otp', message: 'Invalid or expired OTP' }]
       });
     }
 
@@ -148,13 +153,20 @@ const verifyOTP = async (req, res) => {
       if (otpDoc.hasExceededMaxAttempts()) {
         return res.status(400).json({
           success: false,
-          message: 'Maximum OTP attempts exceeded. Please request a new OTP.'
+          message: 'Maximum OTP attempts exceeded. Please request a new OTP.',
+          errors: [{ field: 'otp', message: 'Maximum attempts exceeded' }]
         });
+      } else {
+        // User exists but not verified, allow re-registration
+        await User.deleteOne({ email: email.toLowerCase() });
+        await OTP.deleteMany({ email: email.toLowerCase() });
+      }
       }
 
       return res.status(400).json({
         success: false,
-        message: 'Invalid OTP code'
+        message: 'Invalid OTP code',
+        errors: [{ field: 'otp', message: 'Invalid OTP code' }]
       });
     }
 
@@ -214,7 +226,8 @@ const login = async (req, res) => {
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid email or password'
+        message: 'Invalid email or password',
+        errors: [{ field: 'email', message: 'Invalid email or password' }]
       });
     }
 
@@ -222,7 +235,8 @@ const login = async (req, res) => {
     if (!user.isActive) {
       return res.status(401).json({
         success: false,
-        message: 'Account has been deactivated'
+        message: 'Account has been deactivated',
+        errors: [{ field: 'email', message: 'Account has been deactivated' }]
       });
     }
 
@@ -230,7 +244,8 @@ const login = async (req, res) => {
     if (!user.isEmailVerified) {
       return res.status(401).json({
         success: false,
-        message: 'Please verify your email before logging in'
+        message: 'Please verify your email before logging in',
+        errors: [{ field: 'email', message: 'Please verify your email before logging in' }]
       });
     }
 
@@ -239,7 +254,8 @@ const login = async (req, res) => {
     if (!isPasswordValid) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid email or password'
+        message: 'Invalid email or password',
+        errors: [{ field: 'password', message: 'Invalid email or password' }]
       });
     }
 
@@ -344,7 +360,8 @@ const resetPassword = async (req, res) => {
     if (!user) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid or expired reset token'
+        message: 'Invalid or expired reset token',
+        errors: [{ field: 'token', message: 'Invalid or expired reset token' }]
       });
     }
 
@@ -456,14 +473,16 @@ const resendOTP = async (req, res) => {
     if (!user) {
       return res.status(400).json({
         success: false,
-        message: 'User not found'
+        message: 'User not found',
+        errors: [{ field: 'email', message: 'User not found' }]
       });
     }
 
     if (user.isEmailVerified) {
       return res.status(400).json({
         success: false,
-        message: 'Email is already verified'
+        message: 'Email is already verified',
+        errors: [{ field: 'email', message: 'Email is already verified' }]
       });
     }
 

@@ -30,7 +30,8 @@ const authenticate = async (req, res, next) => {
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'User no longer exists.'
+        message: 'User no longer exists.',
+        code: 'USER_NOT_FOUND'
       });
     }
 
@@ -38,7 +39,8 @@ const authenticate = async (req, res, next) => {
     if (!user.isActive) {
       return res.status(401).json({
         success: false,
-        message: 'Account has been deactivated.'
+        message: 'Account has been deactivated.',
+        code: 'ACCOUNT_DEACTIVATED'
       });
     }
 
@@ -46,7 +48,8 @@ const authenticate = async (req, res, next) => {
     if (!user.isEmailVerified) {
       return res.status(401).json({
         success: false,
-        message: 'Email not verified. Please verify your email first.'
+        message: 'Email not verified. Please verify your email first.',
+        code: 'EMAIL_NOT_VERIFIED'
       });
     }
 

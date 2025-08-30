@@ -41,6 +41,8 @@ const ResetPassword = () => {
         error.response.data.errors.forEach(err => {
           setFieldError(err.field || 'password', err.message);
         });
+      } else {
+        setFieldError('password', error.response?.data?.message || 'Password reset failed');
       }
     } finally {
       setSubmitting(false);

@@ -77,7 +77,7 @@ const LandingPage = () => {
               </Link>
               <Link
                 to="/login"
-                className="inline-flex items-center px-8 py-4 border-2 border-white text-lg font-medium rounded-lg text-white hover:bg-white hover:text-green-600 transition-colors"
+                className="inline-flex items-center px-8 py-4 border-2 border-white text-lg font-medium rounded-lg text-white hover:bg-white hover:bg-opacity-20 transition-colors"
               >
                 Sign In
               </Link>

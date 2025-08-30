@@ -66,42 +66,42 @@ const profileUpdateValidation = [
   
   // Role-specific validations for updates
   body('facilityDetails.facilityName')
-    .if(body('facilityDetails').exists())
+    .optional()
     .isLength({ min: 2, max: 100 })
     .withMessage('Facility name must be between 2 and 100 characters'),
   
   body('facilityDetails.location')
-    .if(body('facilityDetails').exists())
+    .optional()
     .notEmpty()
     .withMessage('Facility location cannot be empty'),
   
   body('facilityDetails.capacity')
-    .if(body('facilityDetails.capacity').exists())
+    .optional()
     .isNumeric()
     .withMessage('Facility capacity must be a number'),
   
   body('facilityDetails.technology')
-    .if(body('facilityDetails.technology').exists())
+    .optional()
     .notEmpty()
     .withMessage('Technology type cannot be empty'),
   
   body('certificationBody.bodyName')
-    .if(body('certificationBody').exists())
+    .optional()
     .notEmpty()
     .withMessage('Certification body name cannot be empty'),
   
   body('certificationBody.accreditationNumber')
-    .if(body('certificationBody').exists())
+    .optional()
     .notEmpty()
     .withMessage('Accreditation number cannot be empty'),
   
   body('certificationBody.scope')
-    .if(body('certificationBody').exists())
+    .optional()
     .notEmpty()
     .withMessage('Certification scope cannot be empty'),
   
   body('industryType')
-    .if(body('industryType').exists())
+    .optional()
     .isIn(['steel', 'ammonia', 'transport', 'chemical', 'other'])
     .withMessage('Invalid industry type')
 ];

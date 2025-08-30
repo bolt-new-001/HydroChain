@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
 import { useAuth } from '../../contexts/AuthContext';
 import { Mail, ArrowLeft, RefreshCw } from 'lucide-react';
-import LoadingSpinner from '../common/LoadingSpinner';
+import toast from 'react-hot-toast';
 
 const OTPVerification = () => {
   const [otp, setOtp] = useState(['', '', '', '']);
@@ -83,22 +81,20 @@ const OTPVerification = () => {
     }
   };
 
-  const validationSchema = Yup.object({
-    otp: Yup.string()
-      .length(4, 'OTP must be exactly 4 digits')
-      .matches(/^\d{4}$/, 'OTP must contain only numbers')
-      .required('OTP is required')
-  });
-
   const handleSubmit = async (values) => {
     try {
       const otpString = otp.join('');
+      if (otpString.length !== 4) {
+        toast.error('Please enter all 4 digits');
+        return;
+      }
       const result = await verifyOTP(email, otpString);
       if (result.success) {
         navigate('/dashboard');
       }
     } catch (error) {
       // Error is handled by the auth context
+      setOtp(['', '', '', '']); // Clear OTP on error
     }
   };
 
@@ -137,13 +133,7 @@ const OTPVerification = () => {
           </div>
         </div>
 
-        <Formik
-          initialValues={{ otp: '' }}
-          validationSchema={validationSchema}
-          onSubmit={handleSubmit}
-        >
-          {({ isSubmitting, setFieldValue }) => (
-            <Form className="mt-8 space-y-6">
+        <div className="mt-8 space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 text-center mb-4">
                   Enter the 4-digit code from your email
@@ -151,8 +141,8 @@ const OTPVerification = () => {
                 
                 <div className="flex justify-center space-x-3">
                   {otp.map((digit, index) => (
-                    <div key={index} className="relative">
-                      <Field
+                    <input
+                      key={index}
                         name={`otp-${index}`}
                         type="text"
                         maxLength="1"
@@ -160,14 +150,7 @@ const OTPVerification = () => {
                         onChange={(e) => handleOtpChange(index, e.target.value)}
                         onKeyDown={(e) => handleKeyDown(index, e)}
                         className="w-16 h-16 text-center text-2xl font-semibold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors"
-                        placeholder=""
                       />
-                      {digit && (
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-2xl font-semibold text-gray-900">{digit}</span>
-                        </div>
-                      )}
-                    </div>
                   ))}
                 </div>
                 
@@ -195,14 +178,14 @@ const OTPVerification = () => {
               <div>
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={otp.join('').length !== 4}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleSubmit();
+                  }}
                   className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isSubmitting ? (
-                    <LoadingSpinner size="sm" />
-                  ) : (
-                    'Verify Email'
-                  )}
+                  Verify Email
                 </button>
               </div>
 
@@ -216,9 +199,7 @@ const OTPVerification = () => {
                   Back to Sign Up
                 </button>
               </div>
-            </Form>
-          )}
-        </Formik>
+        </div>
 
         <div className="text-center">
           <p className="text-xs text-gray-500">

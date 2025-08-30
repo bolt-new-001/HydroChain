@@ -38,10 +38,11 @@ const userSchema = new mongoose.Schema({
       technology: String,
       certificationStatus: {
         type: String,
+        enum: ['pending', 'approved', 'rejected'],
         default: 'pending'
       }
     },
-    default: undefined
+    required: function() { return this.role === 'producer'; }
   },
   
   certificationBody: {
@@ -56,13 +57,13 @@ const userSchema = new mongoose.Schema({
         }
       }
     },
-    default: undefined
+    required: function() { return this.role === 'verifier'; }
   },
   
   industryType: {
     type: String,
     enum: ['steel', 'ammonia', 'transport', 'chemical', 'other'],
-    default: undefined
+    required: function() { return this.role === 'buyer'; }
   },
   
   // Authentication fields

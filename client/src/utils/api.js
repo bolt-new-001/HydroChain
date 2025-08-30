@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with default config
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
   withCredentials: true,
   timeout: 10000,
 });
@@ -27,11 +27,17 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && 
+        !window.location.pathname.includes('/login') && 
+        !window.location.pathname.includes('/signup') &&
+        !window.location.pathname.includes('/verify-otp')) {
       // Token expired or invalid
       localStorage.removeItem('token');
       delete api.defaults.headers.common['Authorization'];
-      window.location.href = '/login';
+      // Only redirect if not already on auth pages
+      if (!window.location.pathname.includes('/auth')) {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }

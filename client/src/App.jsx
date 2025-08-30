@@ -24,6 +24,9 @@ const AppContent = () => {
   return (
     <Routes>
       {/* Public routes */}
+      <Route path="/" element={
+        isAuthenticated ? <Navigate to="/dashboard" replace /> : <LandingPage />
+      } />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/verify-otp" element={<OTPVerification />} />
       <Route path="/login" element={<Login />} />
@@ -38,8 +41,6 @@ const AppContent = () => {
         </ProtectedRoute>
       } />
       
-      {/* Default redirect */}
-      <Route path="/" element={<LandingPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
