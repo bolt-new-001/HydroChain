@@ -48,10 +48,15 @@ const signup = async (req, res) => {
     const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
       if (existingUser.isEmailVerified) {
-      return res.status(400).json({
-        success: false,
-        message: 'User with this email already exists'
-      });
+        return res.status(400).json({
+          success: false,
+          message: 'User with this email already exists'
+        });
+      } else {
+        // User exists but not verified, allow re-registration
+        await User.deleteOne({ email: email.toLowerCase() });
+        await OTP.deleteMany({ email: email.toLowerCase() });
+      }
     }
 
     // Validate role-specific fields
@@ -149,7 +154,7 @@ const verifyOTP = async (req, res) => {
     // Check if OTP matches
     if (otpDoc.otp !== otp) {
       await otpDoc.incrementAttempts();
-      
+
       if (otpDoc.hasExceededMaxAttempts()) {
         return res.status(400).json({
           success: false,
@@ -157,17 +162,12 @@ const verifyOTP = async (req, res) => {
           errors: [{ field: 'otp', message: 'Maximum attempts exceeded' }]
         });
       } else {
-        // User exists but not verified, allow re-registration
-        await User.deleteOne({ email: email.toLowerCase() });
-        await OTP.deleteMany({ email: email.toLowerCase() });
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid OTP code',
+          errors: [{ field: 'otp', message: 'Invalid OTP code' }]
+        });
       }
-      }
-
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid OTP code',
-        errors: [{ field: 'otp', message: 'Invalid OTP code' }]
-      });
     }
 
     // Mark OTP as verified
@@ -524,4 +524,3 @@ module.exports = {
   updateProfile,
   resendOTP
 };
-
