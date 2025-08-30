@@ -4,6 +4,7 @@
   "description": "GreenChain Platform Frontend",
   "private": true,
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "axios": "^1.5.0",
     "clsx": "^2.0.0",
     "concurrently": "^9.2.1",
