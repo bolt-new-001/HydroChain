@@ -1,9 +1,12 @@
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { LogOut, User, Building2, Shield, Leaf, ShoppingCart, Gavel } from 'lucide-react';
+import RoleBasedAccess from './common/RoleBasedAccess';
+import { useRoleAccess } from '../hooks/useRoleAccess';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
+  const { userRole } = useRoleAccess();
 
   const getRoleIcon = (role) => {
     switch (role) {
@@ -161,6 +164,37 @@ const Dashboard = () => {
                       </span>
                     </dd>
                   </div>
+                  {/* Role-specific information */}
+                  {user.role === 'producer' && user.facilityDetails && (
+                    <>
+                      <div>
+                        <dt className="text-sm font-medium text-gray-500">Facility</dt>
+                        <dd className="mt-1 text-sm text-gray-900">{user.facilityDetails.facilityName}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm font-medium text-gray-500">Capacity</dt>
+                        <dd className="mt-1 text-sm text-gray-900">{user.facilityDetails.capacity} MW</dd>
+                      </div>
+                    </>
+                  )}
+                  {user.role === 'verifier' && user.certificationBody && (
+                    <>
+                      <div>
+                        <dt className="text-sm font-medium text-gray-500">Certification Body</dt>
+                        <dd className="mt-1 text-sm text-gray-900">{user.certificationBody.bodyName}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm font-medium text-gray-500">Accreditation</dt>
+                        <dd className="mt-1 text-sm text-gray-900">{user.certificationBody.accreditationNumber}</dd>
+                      </div>
+                    </>
+                  )}
+                  {user.role === 'buyer' && user.industryType && (
+                    <div>
+                      <dt className="text-sm font-medium text-gray-500">Industry</dt>
+                      <dd className="mt-1 text-sm text-gray-900 capitalize">{user.industryType}</dd>
+                    </div>
+                  )}
                 </dl>
               </div>
             </div>
@@ -183,6 +217,11 @@ const Dashboard = () => {
                 </ul>
               </div>
             </div>
+          </div>
+
+          {/* Role-based Dashboard Content */}
+          <div className="mt-6">
+            <RoleBasedDashboard />
           </div>
 
           {/* Quick Actions */}

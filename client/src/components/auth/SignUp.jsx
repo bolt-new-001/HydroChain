@@ -282,7 +282,7 @@ const SignUp = () => {
                   <Field
                     name="email"
                     type="email"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:border-green-500 focus:ring-green-500"
                     placeholder="Enter your email"
                   />
                   <ErrorMessage name="email" component="div" className="text-red-500 text-sm mt-1" />
@@ -295,7 +295,7 @@ const SignUp = () => {
                     <Field
                       name="password"
                       type={showPassword ? 'text' : 'password'}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 pr-10"
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:border-green-500 focus:ring-green-500 pr-10"
                       placeholder="Enter your password"
                     />
                     <button
@@ -319,7 +319,7 @@ const SignUp = () => {
                   <Field
                     name="confirmPassword"
                     type="password"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:border-green-500 focus:ring-green-500"
                     placeholder="Confirm your password"
                   />
                   <ErrorMessage name="confirmPassword" component="div" className="text-red-500 text-sm mt-1" />
@@ -330,7 +330,7 @@ const SignUp = () => {
                   <label className="block text-sm font-medium text-gray-700">Company Name</label>
                   <Field
                     name="companyName"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:border-green-500 focus:ring-green-500"
                     placeholder="Enter your company name"
                   />
                   <ErrorMessage name="companyName" component="div" className="text-red-500 text-sm mt-1" />
@@ -403,6 +403,11 @@ const SignUp = () => {
                     Sign in
                   </Link>
                 </p>
+                <p className="text-sm text-gray-600 mt-2">
+                  <Link to="/" className="font-medium text-gray-500 hover:text-gray-700">
+                    ← Back to Home
+                  </Link>
+                </p>
               </div>
             </Form>
           )}
@@ -413,4 +418,3 @@ const SignUp = () => {
 };
 
 export default SignUp;
-

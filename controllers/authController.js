@@ -54,21 +54,21 @@ const signup = async (req, res) => {
     }
 
     // Validate role-specific fields
-    if (role === 'producer' && !facilityDetails) {
+    if (role === 'producer' && (!facilityDetails || !facilityDetails.facilityName)) {
       return res.status(400).json({
         success: false,
         message: 'Facility details are required for producers'
       });
     }
 
-    if (role === 'verifier' && !certificationBody) {
+    if (role === 'verifier' && (!certificationBody || !certificationBody.bodyName)) {
       return res.status(400).json({
         success: false,
         message: 'Certification body details are required for verifiers'
       });
     }
 
-    if (role === 'buyer' && !industryType) {
+    if (role === 'buyer' && (!industryType || industryType.trim() === '')) {
       return res.status(400).json({
         success: false,
         message: 'Industry type is required for buyers'
@@ -81,9 +81,9 @@ const signup = async (req, res) => {
       password,
       role,
       companyName,
-      facilityDetails: role === 'producer' ? facilityDetails : undefined,
-      certificationBody: role === 'verifier' ? certificationBody : undefined,
-      industryType: role === 'buyer' ? industryType : undefined
+      ...(role === 'producer' && facilityDetails && { facilityDetails }),
+      ...(role === 'verifier' && certificationBody && { certificationBody }),
+      ...(role === 'buyer' && industryType && { industryType })
     });
 
     await user.save();

@@ -36,9 +36,12 @@ const userSchema = new mongoose.Schema({
       location: String,
       capacity: Number,
       technology: String,
-      certificationStatus: String
+      certificationStatus: {
+        type: String,
+        default: 'pending'
+      }
     },
-    required: function() { return this.role === 'producer'; }
+    default: undefined
   },
   
   certificationBody: {
@@ -46,15 +49,20 @@ const userSchema = new mongoose.Schema({
       bodyName: String,
       accreditationNumber: String,
       scope: String,
-      expiryDate: Date
+      expiryDate: {
+        type: Date,
+        default: function() {
+          return new Date(Date.now() + 365 * 24 * 60 * 60 * 1000); // 1 year from now
+        }
+      }
     },
-    required: function() { return this.role === 'verifier'; }
+    default: undefined
   },
   
   industryType: {
     type: String,
     enum: ['steel', 'ammonia', 'transport', 'chemical', 'other'],
-    required: function() { return this.role === 'buyer'; }
+    default: undefined
   },
   
   // Authentication fields

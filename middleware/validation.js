@@ -27,49 +27,6 @@ const signupValidation = [
   body('role')
     .isIn(['admin', 'producer', 'verifier', 'buyer', 'regulator'])
     .withMessage('Invalid role selected'),
-  
-  // Role-specific validations
-  body('facilityDetails.facilityName')
-    .if(body('role').equals('producer'))
-    .notEmpty()
-    .withMessage('Facility name is required for producers')
-    .isLength({ min: 2, max: 100 })
-    .withMessage('Facility name must be between 2 and 100 characters'),
-  
-  body('facilityDetails.location')
-    .if(body('role').equals('producer'))
-    .notEmpty()
-    .withMessage('Facility location is required for producers'),
-  
-  body('facilityDetails.capacity')
-    .if(body('role').equals('producer'))
-    .isNumeric()
-    .withMessage('Facility capacity must be a number'),
-  
-  body('facilityDetails.technology')
-    .if(body('role').equals('producer'))
-    .notEmpty()
-    .withMessage('Technology type is required for producers'),
-  
-  body('certificationBody.bodyName')
-    .if(body('role').equals('verifier'))
-    .notEmpty()
-    .withMessage('Certification body name is required for verifiers'),
-  
-  body('certificationBody.accreditationNumber')
-    .if(body('role').equals('verifier'))
-    .notEmpty()
-    .withMessage('Accreditation number is required for verifiers'),
-  
-  body('certificationBody.scope')
-    .if(body('role').equals('verifier'))
-    .notEmpty()
-    .withMessage('Certification scope is required for verifiers'),
-  
-  body('industryType')
-    .if(body('role').equals('buyer'))
-    .isIn(['steel', 'ammonia', 'transport', 'chemical', 'other'])
-    .withMessage('Industry type is required for buyers')
 ];
 
 // OTP verification validation

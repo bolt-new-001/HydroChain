@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import toast from 'react-hot-toast';
 
 const AuthContext = createContext();
@@ -17,10 +17,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Configure axios defaults
-  axios.defaults.withCredentials = true;
-  axios.defaults.baseURL = '/api';
-
   // Check authentication status on mount
   useEffect(() => {
     checkAuthStatus();
@@ -28,18 +24,14 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuthStatus = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (token) {
-        const response = await axios.get('/auth/profile');
+        const response = await api.get('/auth/profile');
         if (response.data.success) {
           setUser(response.data.data.user);
           setIsAuthenticated(true);
-        } else {
           localStorage.removeItem('token');
         }
       }
     } catch (error) {
-      localStorage.removeItem('token');
     } finally {
       setLoading(false);
     }
@@ -47,7 +39,7 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (userData) => {
     try {
-      const response = await axios.post('/auth/signup', userData);
+      const response = await api.post('/auth/signup', userData);
       if (response.data.success) {
         toast.success('Registration successful! Please check your email for verification.');
         return { success: true, data: response.data.data };
@@ -61,12 +53,11 @@ export const AuthProvider = ({ children }) => {
 
   const verifyOTP = async (email, otp) => {
     try {
-      const response = await axios.post('/auth/verify-otp', { email, otp });
+      const response = await api.post('/auth/verify-otp', { email, otp });
       if (response.data.success) {
         const { user: userData, token } = response.data.data;
         setUser(userData);
         setIsAuthenticated(true);
-        localStorage.setItem('token', token);
         toast.success('Email verified successfully!');
         return { success: true, data: response.data.data };
       }
@@ -79,12 +70,11 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post('/auth/login', { email, password });
+      const response = await api.post('/auth/login', { email, password });
       if (response.data.success) {
         const { user: userData, token } = response.data.data;
         setUser(userData);
         setIsAuthenticated(true);
-        localStorage.setItem('token', token);
         toast.success('Login successful!');
         return { success: true, data: response.data.data };
       }
@@ -97,20 +87,19 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await axios.post('/auth/logout');
+      await api.post('/auth/logout');
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
       setUser(null);
       setIsAuthenticated(false);
-      localStorage.removeItem('token');
       toast.success('Logged out successfully');
     }
   };
 
   const forgotPassword = async (email) => {
     try {
-      const response = await axios.post('/auth/forgot-password', { email });
+      const response = await api.post('/auth/forgot-password', { email });
       if (response.data.success) {
         toast.success('Password reset link sent to your email!');
         return { success: true };
@@ -124,7 +113,7 @@ export const AuthProvider = ({ children }) => {
 
   const resetPassword = async (token, password) => {
     try {
-      const response = await axios.post(`/auth/reset-password/${token}`, { password });
+      const response = await api.post(`/auth/reset-password/${token}`, { password });
       if (response.data.success) {
         toast.success('Password reset successfully! You can now login with your new password.');
         return { success: true };
@@ -138,7 +127,7 @@ export const AuthProvider = ({ children }) => {
 
   const resendOTP = async (email) => {
     try {
-      const response = await axios.post('/auth/resend-otp', { email });
+      const response = await api.post('/auth/resend-otp', { email });
       if (response.data.success) {
         toast.success('New OTP sent to your email!');
         return { success: true };
@@ -152,7 +141,7 @@ export const AuthProvider = ({ children }) => {
 
   const updateProfile = async (profileData) => {
     try {
-      const response = await axios.put('/auth/profile', profileData);
+      const response = await api.put('/auth/profile', profileData);
       if (response.data.success) {
         setUser(response.data.data.user);
         toast.success('Profile updated successfully!');
